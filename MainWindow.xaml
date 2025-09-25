@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Razbor_DE"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Разбор ДЭ" Height="510" Width="800" ResizeMode="NoResize" Icon="/Images/free-icon-app-development-7491568.ico">
     <Grid>
         <Frame x:Name="frmMain" NavigationUIVisibility="Hidden">
             

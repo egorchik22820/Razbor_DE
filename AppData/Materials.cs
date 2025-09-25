@@ -11,7 +11,8 @@ namespace Razbor_DE.AppData
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.IO;
+
     public partial class Materials
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
@@ -30,7 +31,43 @@ namespace Razbor_DE.AppData
         public int AmountInPack { get; set; }
         public int UnitId { get; set; }
         public string Description { get; set; }
-    
+
+        public string CurrentPhoto
+        {
+            get
+            {
+                // Если изображение не задано или путь пустой - возвращаем изображение по умолчанию
+                if (string.IsNullOrEmpty(ImagePath))
+                    return Path.Combine(Directory.GetCurrentDirectory(), "Images", "picture.png");
+
+                // Проверяем, является ли путь абсолютным
+                if (Path.IsPathRooted(ImagePath))
+                {
+                    // Если файл существует по абсолютному пути - возвращаем его
+                    if (File.Exists(ImagePath))
+                        return ImagePath;
+
+                    // Если нет - возвращаем изображение по умолчанию
+                    return Path.Combine(Directory.GetCurrentDirectory(), "Images", "picture.jpg");
+                }
+
+                // Для относительного пути проверяем два варианта размещения
+                string[] possiblePaths = {
+                    Path.Combine(Directory.GetCurrentDirectory(), ImagePath),
+                    Path.Combine(Directory.GetCurrentDirectory(), "Images", ImagePath)
+                };
+
+                foreach (var path in possiblePaths)
+                {
+                    if (File.Exists(path))
+                        return path;
+                }
+
+                // Если ни один вариант не сработал - возвращаем изображение по умолчанию
+                return Path.Combine(Directory.GetCurrentDirectory(), "Images", "picture.jpg");
+            }
+        }
+
         public virtual MaterialType MaterialType { get; set; }
         public virtual Units Units { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

@@ -36,7 +36,7 @@ namespace Razbor_DE.Pages.Admin
             if (user != null)
             {
                 MessageBox.Show($"Добро пожаловать, {user.Login}!");
-                if (user.UserTypes.Name.ToString() == "admin")
+                if (user.UserTypes.Name.ToString() == "Admin")
                     _mainFrame.Navigate(new DataOutPage(_mainFrame)); // переход на главную страницу
                 else
                     _mainFrame.Navigate(new Pages.User.DataOutUserPage(_mainFrame));

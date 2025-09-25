@@ -3,43 +3,95 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:Razbor_DE.Pages"
+      xmlns:local="clr-namespace:Razbor_DE.AppData.Converters"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="DataOutPage">
+      Title="DataOutPage"
+      Background="#F0F2F5">
 
     <Page.Resources>
-        <DropShadowEffect x:Key="ShadowEffect" Color="Black" Opacity="0.2" BlurRadius="5"/>
+        <local:SupplierNamesConverter x:Key="SupplierNamesConverter"/>
+        <local:PageToColorConverter x:Key="PageToColorConverter"/>
     </Page.Resources>
 
     <Grid>
-        <ListView x:Name="listRecipes" Background="#FFA3F6ED" BorderThickness="0"
-          ScrollViewer.VerticalScrollBarVisibility="Hidden" Margin="0,53,133,0" SelectionMode="Extended" GotFocus="listRecipes_GotFocus">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Верхняя панель -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10" Background="White">
+            <StackPanel Orientation="Vertical" Margin="0,0,20,0">
+                <TextBlock Text="Введите для поиска" Foreground="Gray" FontSize="12"/>
+                <TextBox x:Name="TextSearch" Width="150" Height="25" TextChanged="TextSearch_TextChanged"
+                         BorderBrush="LightGray" BorderThickness="1"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="20,0,20,0">
+                <TextBlock Text="Сортировка" Foreground="Gray" FontSize="12"/>
+                <ComboBox x:Name="ComboSort" Width="120" Height="25" SelectionChanged="ComboSort_SelectionChanged">
+                    <ComboBoxItem Content="по имени"/>
+                    <ComboBoxItem Content="по времени готовки"/>
+                </ComboBox>
+            </StackPanel>
+
+            <StackPanel Orientation="Vertical" Margin="20,0,0,0">
+                <TextBlock Text="Фильтрация" Foreground="Gray" FontSize="12"/>
+                <ComboBox Width="120" Height="25">
+                    <ComboBoxItem Content="все материалы"/>
+                </ComboBox>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Список -->
+        <ListView x:Name="listRecipes" Grid.Row="1" Margin="10" Background="White"
+                  BorderThickness="1" BorderBrush="LightGray"
+                  ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                  ScrollViewer.CanContentScroll="False"
+                  SelectionMode="Extended" GotFocus="listRecipes_GotFocus">
+
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Border Background="White" CornerRadius="10" Padding="10" Margin="5"
-                    Effect="{DynamicResource ShadowEffect}">
+                    <Border BorderBrush="LightGray" BorderThickness="0,0,0,1" Padding="15">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="100"/>
-                                <ColumnDefinition Width="700"/>
-                                <ColumnDefinition Width="200"/>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
 
-                            <Image Source="{Binding ImagePath}" Grid.Column="0" Margin="10"/>
+                            <!-- Изображение -->
+                            <Image Source="{Binding CurrentPhoto}" Grid.Column="0" 
+                                   Width="80" Height="80" Margin="0,0,15,0"
+                                   VerticalAlignment="Top" Stretch="Uniform"/>
 
-                            <StackPanel Grid.Column="1" Orientation="Vertical" Margin="10,0">
-                                <TextBlock FontSize="16" FontWeight="Bold" Foreground="#2C3E50">
-                            <Run Text="Название: " />
-                            <Run Text="{Binding Name}" FontWeight="Normal"/>
+                            <!-- Текстовая информация -->
+                            <StackPanel Grid.Column="1">
+                                <!-- Первая строка -->
+                                <TextBlock Margin="0,0,0,5">
+                                    <Run Text="{Binding MaterialType.Name}" FontWeight="Bold"/>
+                                    <Run Text=" | " FontWeight="Bold"/>
+                                    <Run Text="{Binding Name}" FontWeight="Bold"/>
                                 </TextBlock>
-                                <TextBlock FontSize="14" Foreground="#555" TextWrapping="Wrap">
-                            <Run Text="Описание: " />
-                            <Run Text="{Binding Description}" FontWeight="Normal"/>
+
+                                <!-- Вторая строка -->
+                                <TextBlock Margin="0,0,0,5">
+                                    <Run Text="Минимальное количество: "/>
+                                    <Run Text="{Binding MinQuantity}"/>
+                                    <Run Text=" шт"/>
                                 </TextBlock>
-                                <TextBlock FontSize="14" Foreground="#777">
-                            <Run Text="Цена: " />
-                            <Run Text="{Binding Cost}" FontWeight="Bold"/>
+
+                                <!-- Третья строка -->
+                                <TextBlock Margin="0,0,0,5" TextWrapping="Wrap">
+                                    <Run Text="Поставщики: "/>
+                                    <Run Text="{Binding MaterialSuppliers, Converter={StaticResource SupplierNamesConverter}}"/>
+                                </TextBlock>
+
+                                <!-- Четвертая строка -->
+                                <TextBlock>
+                                    <Run Text="Остаток: "/>
+                                    <Run Text="{Binding QuantityInStorage}" FontWeight="Bold" Foreground="Red"/>
+                                    <Run Text=" шт"/>
                                 </TextBlock>
                             </StackPanel>
                         </Grid>
@@ -48,30 +100,30 @@
             </ListView.ItemTemplate>
         </ListView>
 
-        <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Right"
-            VerticalAlignment="Top" Margin="10,0,10,0">
-            <Button x:Name="addBtn" Content="Добавить" Width="105" Height="40" Margin="3"
-            Background="#2ECC71" Foreground="White" FontSize="14"
-            FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="addBtn_Click"/>
-            <Button x:Name="editBtn" Content="Редактировать" Width="105" Height="40" Margin="3"
-            Background="#3498DB" Foreground="White" FontSize="14"
-            FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="editBtn_Click"/>
-            <Button x:Name="deleteBtn" Content="Удалить" Width="105" Height="40" Margin="3"
-            Background="#FFFF5D5D" Foreground="White" FontSize="14"
-            FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="deleteBtn_Click"/>
-        </StackPanel>
+        <!-- Пагинация -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+            <Button x:Name="btnPrev" Content="&lt;" Width="30" Height="25" Margin="2" Click="BtnPrev_Click"/>
 
-        <StackPanel Margin="10,2,10,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top">
-            <TextBlock Text="Поиск:"/>
-            <TextBox x:Name="TextSearch" Width="116" Height="22" TextChanged="TextSearch_TextChanged"/>
-        </StackPanel>
+            <!-- Кнопки страниц будут создаваться в коде -->
+            <ItemsControl x:Name="pageButtons" ItemsSource="{Binding PageNumbers}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding}" Width="30" Height="25" Margin="2" 
+                                Click="PageButton_Click" Tag="{Binding}"
+                                Background="{Binding Tag, RelativeSource={RelativeSource Self}, 
+                                                    Converter={StaticResource PageToColorConverter}}" />
+                        
+                        
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
 
-        <StackPanel Margin="140,2,0,0" Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Top" Height="40">
-            <TextBlock Text="Сортировка:"/>
-            <ComboBox x:Name="ComboSort" Width="151" SelectionChanged="ComboSort_SelectionChanged">
-                <ComboBoxItem Content="по имени"/>
-                <ComboBoxItem Content="по времени готовки"/>
-            </ComboBox>
+            <Button x:Name="btnNext" Content="&gt;" Width="30" Height="25" Margin="2" Click="BtnNext_Click"/>
         </StackPanel>
     </Grid>
 </Page>
