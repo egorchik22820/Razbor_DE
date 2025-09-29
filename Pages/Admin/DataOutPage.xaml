@@ -14,42 +14,63 @@
     </Page.Resources>
 
     <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <!-- Кнопки справа -->
+        <StackPanel Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" Orientation="Vertical" 
+                    HorizontalAlignment="Right" VerticalAlignment="Top" 
+                    Margin="10,10,10,10">
+            <Button x:Name="addBtn" Content="Добавить" Width="105" Height="40" Margin="3"
+                    Background="#2ECC71" Foreground="White" FontSize="14"
+                    FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="addBtn_Click"/>
+            <Button x:Name="editBtn" Content="Редактировать" Width="105" Height="40" Margin="3"
+                    Background="#3498DB" Foreground="White" FontSize="14"
+                    FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="editBtn_Click"/>
+            <Button x:Name="deleteBtn" Content="Удалить" Width="105" Height="40" Margin="3"
+                    Background="#FFFF5D5D" Foreground="White" FontSize="14"
+                    FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="deleteBtn_Click"/>
+        </StackPanel>
+
         <!-- Верхняя панель -->
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="10" Background="White">
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal" Margin="10,10,10,10" 
+                    Background="White" Height="60" VerticalAlignment="Top">
             <StackPanel Orientation="Vertical" Margin="0,0,20,0">
-                <TextBlock Text="Введите для поиска" Foreground="Gray" FontSize="12"/>
+                <TextBlock Text="Введите для поиска" Foreground="Gray" FontSize="12" Margin="0,0,0,2"/>
                 <TextBox x:Name="TextSearch" Width="150" Height="25" TextChanged="TextSearch_TextChanged"
                          BorderBrush="LightGray" BorderThickness="1"/>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Margin="20,0,20,0">
-                <TextBlock Text="Сортировка" Foreground="Gray" FontSize="12"/>
+                <TextBlock Text="Сортировка" Foreground="Gray" FontSize="12" Margin="0,0,0,2"/>
                 <ComboBox x:Name="ComboSort" Width="120" Height="25" SelectionChanged="ComboSort_SelectionChanged">
-                    <ComboBoxItem Content="по имени"/>
-                    <ComboBoxItem Content="по времени готовки"/>
+                    <ComboBoxItem Content="По названию"/>
+                    <ComboBoxItem Content="По остатку"/>
+                    <ComboBoxItem Content="Нет"/>
                 </ComboBox>
             </StackPanel>
 
             <StackPanel Orientation="Vertical" Margin="20,0,0,0">
-                <TextBlock Text="Фильтрация" Foreground="Gray" FontSize="12"/>
-                <ComboBox Width="120" Height="25">
-                    <ComboBoxItem Content="все материалы"/>
-                </ComboBox>
+                <TextBlock Text="Фильтрация" Foreground="Gray" FontSize="12" Margin="0,0,0,2"/>
+                <ComboBox x:Name="ComboBox" Width="120" Height="25" DisplayMemberPath="Name" 
+                          SelectionChanged="ComboBox_SelectionChanged"/>
             </StackPanel>
         </StackPanel>
 
         <!-- Список -->
-        <ListView x:Name="listRecipes" Grid.Row="1" Margin="10" Background="White"
-                  BorderThickness="1" BorderBrush="LightGray"
+        <ListView x:Name="listMaterials" Grid.Row="1" Grid.Column="0" Margin="10,0,10,10" 
+                  Background="White" BorderThickness="1" BorderBrush="LightGray"
                   ScrollViewer.VerticalScrollBarVisibility="Disabled"
                   ScrollViewer.CanContentScroll="False"
-                  SelectionMode="Extended" GotFocus="listRecipes_GotFocus">
+                  SelectionMode="Single" GotFocus="listRecipes_GotFocus">
 
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -101,7 +122,8 @@
         </ListView>
 
         <!-- Пагинация -->
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+        <StackPanel Grid.Row="2" Grid.Column="0" Orientation="Horizontal" 
+                    HorizontalAlignment="Center" Margin="10,0,10,10">
             <Button x:Name="btnPrev" Content="&lt;" Width="30" Height="25" Margin="2" Click="BtnPrev_Click"/>
 
             <!-- Кнопки страниц будут создаваться в коде -->
@@ -117,8 +139,6 @@
                                 Click="PageButton_Click" Tag="{Binding}"
                                 Background="{Binding Tag, RelativeSource={RelativeSource Self}, 
                                                     Converter={StaticResource PageToColorConverter}}" />
-                        
-                        
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

@@ -15,9 +15,21 @@ namespace Razbor_DE.AppData.Converters
             if (value is IEnumerable<MaterialSuppliers> materialSuppliers)
             {
                 var supplierNames = materialSuppliers.Select(ms => ms.Suppliers?.Name)
-                                                      .Where(name => !string.IsNullOrEmpty(name));
+                                                      .Where(name => !string.IsNullOrEmpty(name)).ToList();
 
+                //if (supplierNames.Count > 2)
+                //{
+                //    List<string> strings = new List<string>();
+                //    for (int i = 0; i < 4; i++)
+                //    {
+                //        strings[i] = supplierNames[i];
+                //    }
+                //    return string.Join(", ", strings) + " ...";
+                //}
+                //else
+                //    return string.Join(", ", supplierNames);
                 return string.Join(", ", supplierNames);
+
             }
 
             return string.Empty;
